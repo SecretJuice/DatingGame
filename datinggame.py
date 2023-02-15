@@ -150,7 +150,7 @@ def BuildDatePortrait(gender):
 
 def DisplayDatePortrait(portrait):
 
-    pos = (70, 46)
+    pos = (70, 12)
 
     for category in portrait:
 
@@ -274,7 +274,7 @@ while is_running:
     
     DisplayDatePortrait(current_date_portrait)
 
-    PlaceCentered(WriteOutText(partner_name_text, header_font, (20, 20, 20)), (230, 385))
+    PlaceCentered(WriteOutText(partner_name_text, header_font, (255, 255, 200)), (230, 391))
     window_surface.blit(partner_traits_header, (188, 420))
     PlaceMultiline(scenario_text, header_font, (20, 20, 20), (410, 50), 400)
     # window_surface.blit(WriteOutText(option_a_text, header_font, (20, 20, 20)), (400, 245))
