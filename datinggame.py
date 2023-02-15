@@ -4,12 +4,39 @@ import random
 
 WINDOW_SIZE = (480*2, 270*2)
 
-scenarios = [{'scenario': "Basically this thing happened what are you going to do about it you scared i bet your scared you scaredy cat",
-              'success': "Do the Right thing",
-              'fail': "Do the Wrong thing"},
-             {'scenario': "Woah a neat thing happened",
-              'success': "Do a cool thing",
-              'fail': "Do a not so cool thing"}]
+def SomeFunc(*params):
+    print("first funnc")
+    CreateSO("female")
+    
+
+def SomeOtherFunc(*params):
+    print("yet another func")
+    ChangeEmotion(random.randint(0,3))
+
+scenarios = [
+            {'scenario': "Basically this thing happened what are you going to do about it you scared i bet your scared you scaredy cat",
+            'option_a': {
+
+                "text": "Option text that shows up in box",
+                "positive_traits": ["affectionate", "attentive"],
+                "negative_traits": ["stubborn"],
+                "display_function": SomeFunc,
+                "activation_function": SomeFunc,
+                "display_func_params": [],
+                "activation_func_params": []
+
+            },
+            'option_b': {
+
+                "text": "Option text that shows up in box",
+                "positive_traits": ["affectionate", "attentive"],
+                "negative_traits": ["stubborn"],
+                "display_function": SomeFunc,
+                "activation_function": SomeOtherFunc,
+                "display_func_params": [],
+                "activation_func_params": []
+            }}
+            ]
 
               # Need Scenario text, traits that favor, traits that dont, stat features
 
@@ -92,6 +119,8 @@ date_names = {
 traits = ["affectionate", "jealous", "attentive", "possessive", "caring", "moody", "devoted", "stubborn", "empathetic", "insecure", "romantic", "needy", "considerate", "temperamental", "trustworthy", "judgmental", "communicative", "distrustful", "compassionate", "manipulative", "dedicated", "demanding", "supportive", "clingy", "understanding", "distant", "adventurous", "impulsive", "open-minded", "critical", "spontaneous"]
 
 
+
+
 date_portrait_images = {
 
     "male": {
@@ -157,15 +186,48 @@ def DisplayDatePortrait(portrait):
         if portrait[category] != None:
             RenderElement(portrait[category], pos)
 
-
-
 current_date_portrait = BuildDatePortrait("female")
-print(current_date_portrait)
 
 background = LoadImage("background.png")
-empathy_icon = LoadImage("empathy.png")
-quickthinking_icon = LoadImage("quickthinking.png")
-suave_icon = LoadImage("suave.png")
+empathy_icon = LoadImage("icons/empathy.png")
+quickthinking_icon = LoadImage("icons/quickthinking.png")
+suave_icon = LoadImage("icons/suave.png")
+
+emotion_icons = [LoadImage(f"icons/emoji_{i+1}.png") for i in range(4)]
+
+show_emotion = True
+current_emotion = emotion_icons[0]
+
+clock_subs = {
+
+    "emotion_icon": 0
+
+}
+
+def GetClockValue(clock):
+    return clock_subs[clock]
+
+def ChangeEmotion(emote_level):
+
+    global current_emotion
+    current_emotion = emotion_icons[emote_level]
+
+    clock_subs['emotion_icon'] = 1
+
+
+def ShowEmotion():
+
+    if GetClockValue("emotion_icon") > 0:
+        RenderElement(current_emotion, (310, 50))
+
+def UpdateClockSubscribers(delta):
+    
+    for clock in clock_subs:
+
+        clock_subs[clock] -= delta
+
+        if clock_subs[clock] <= 0:
+            clock_subs[clock] = 0
 
 
 manager = pygame_gui.UIManager(WINDOW_SIZE, "theme.json")
@@ -196,6 +258,8 @@ current_traits = ["Quiet", "Smart", "Clean-freak", "Observant", "Scary", "Smooth
 
 traits_texts = []
 
+current_scenario = None
+
 def CreateSO(gender):
     global partner_name_text
     global current_traits
@@ -222,26 +286,43 @@ def CreateSO(gender):
     current_date_portrait = BuildDatePortrait(gender)
         
 
-
+option_a_function = SomeFunc
+option_a_func_params = []
+option_b_function = SomeOtherFunc
+option_b_func_params = []
 
 
 def LoadScenario(index):
 
+    global current_scenario
     global scenario_text
     global option_a_text
     global option_b_text
+    global option_a_function
+    global option_a_func_params
+    global option_b_function
+    global option_b_func_params
 
-    scenario_text = scenarios[index]['scenario']
-    option_a_text = scenarios[index]['success']
-    option_b_text = scenarios[index]['fail']
+    current_scenario = scenarios[index]
 
-                           
+    scenario_text = current_scenario['scenario']
+    option_a_text = current_scenario['option_a']['text']
+    option_b_text = current_scenario['option_b']['text']
+
+    option_a_function = current_scenario['option_a']['activation_function']
+    option_a_func_params = current_scenario['option_a']['activation_func_params']
+
+    option_b_function = current_scenario['option_b']['activation_function']
+    option_b_func_params = current_scenario['option_b']['activation_func_params']
+
+LoadScenario(0)
+
 def OptionA():
-    LoadScenario(0)
-    CreateSO("female")
+    option_a_function(*option_a_func_params)
+
 
 def OptionB():
-    LoadScenario(1)
+    option_b_function(*option_b_func_params)
 
 def ProcessButtonClickFunctions(ui_button):
     button_functions = {option_a_button: OptionA,
@@ -252,7 +333,7 @@ def ProcessButtonClickFunctions(ui_button):
 
 clock = pygame.time.Clock()
 
-
+# def AnimationController():
 
 is_running = True
 
@@ -277,13 +358,13 @@ while is_running:
     PlaceCentered(WriteOutText(partner_name_text, header_font, (255, 255, 200)), (230, 391))
     window_surface.blit(partner_traits_header, (188, 420))
     PlaceMultiline(scenario_text, header_font, (20, 20, 20), (410, 50), 400)
-    # window_surface.blit(WriteOutText(option_a_text, header_font, (20, 20, 20)), (400, 245))
-    # window_surface.blit(WriteOutText(option_b_text, header_font, (20, 20, 20)), (650, 245))
     PlaceMultiline(option_a_text, header_font, (20, 20, 20), (512, 236), 200, True)
     PlaceMultiline(option_b_text, header_font, (20, 20, 20), (762, 236), 200, True)
     window_surface.blit(suave_icon, (390, 464))
     window_surface.blit(empathy_icon, (560, 464))
     window_surface.blit(quickthinking_icon, (730, 464))
+    ShowEmotion()
+    UpdateClockSubscribers(time_delta)
 
     for index in range(len(traits_texts)):
         if index < 3:
