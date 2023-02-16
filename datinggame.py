@@ -47,7 +47,25 @@ def EvaluateOption(option):
 
     LoadScenario(0)
 
+def CheckScenarioValidity():
+    
+    """Returns True or False depending on whether this particular scenario should be shown to the player in this run"""
 
+    option_a = TraitsCheck("option_a")
+    option_b = TraitsCheck("option_b")
+
+    if len(option_a[0]) > len(option_a[1]) and len(option_b[0]) > len(option_b[1]):
+        return False
+    if len(option_a[0]) < len(option_a[1]) and len(option_b[0]) < len(option_b[1]):
+        return False
+    if len(option_a[0]) == len(option_a[1]) and len(option_b[0]) == len(option_b[1]):
+        return False
+    if len(option_a[0]) == 0 and len(option_a[1]) == 0 and len(option_b[0]) == 0 and len(option_b[1]) == 0:
+        return False
+    
+    return True
+
+current_scenario = None
 
 scenarios = [
             {'scenario': "Basically this thing happened what are you going to do about it you scared i bet your scared you scaredy cat",
@@ -408,7 +426,7 @@ learned_traits = []
 
 traits_texts = []
 
-current_scenario = None
+
 
 current_score = 0
 
@@ -527,6 +545,8 @@ def LoadScenario(index):
 
     option_b_function = current_scenario['option_b']['activation_function']
     option_b_func_params = current_scenario['option_b']['activation_func_params']
+
+    print(CheckScenarioValidity())
 
 SetupRun()
 
