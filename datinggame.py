@@ -126,10 +126,11 @@ date_portrait_images = {
 
     "male": {
 
-        "base": [],
-        "clothing": [],
-        "accessories": [],
-        "hair": []
+        "base": [ LoadImage("dateportrait/base_male_1.png") ],
+        "clothing": [ LoadImage(f"dateportrait/clothing_male_{i+1}.png") for i in range(4) ],
+        "accessories": [ LoadImage('dateportrait/glasses_male_1.png'), None],
+        "facial_hair": [ LoadImage(f"dateportrait/facialhair_male_{i+1}.png") for i in range(5) ],
+        "hair": [ LoadImage(f"dateportrait/hair_male_{i+1}.png") for i in range(8) ]
 
     },
     "female": {
@@ -148,7 +149,8 @@ date_portrait_colors = {
     "base": [pygame.color.Color("#f7d3c0"), pygame.color.Color("#815a4a"), pygame.color.Color("#f9c6a7")],
     "clothing": [pygame.color.Color("#66243e"), pygame.color.Color("#667c5e"), pygame.color.Color("#34172f"), pygame.color.Color("#c8b372")],
     "accessories": [pygame.color.Color("#66243e"), pygame.color.Color("#667c5e")],
-    "hair": [pygame.color.Color("#66243e"), pygame.color.Color("#9a603f"), pygame.color.Color("#34172f"), pygame.color.Color("#f1bc8b")]
+    "hair": [pygame.color.Color("#66243e"), pygame.color.Color("#9a603f"), pygame.color.Color("#34172f"), pygame.color.Color("#f1bc8b")],
+    "facial_hair": [pygame.color.Color("#66243e"), pygame.color.Color("#9a603f"), pygame.color.Color("#34172f"), pygame.color.Color("#f1bc8b")]
 
 }
 
@@ -165,6 +167,9 @@ def BuildDatePortrait(gender):
     "hair": None
 
     }
+
+    if gender == "male":
+        date_portrait["facial_hair"] = None
 
     for category in portrait_options:
 
@@ -205,7 +210,7 @@ current_emotion = emotion_icons[0]
 clock_subs = {
 
     "emotion_icon": 0,
-    "black_fade": 2
+    "black_fade": 0
 
 }
 
@@ -348,7 +353,7 @@ option_b_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 2
                                             text='Option B Text',
                                             manager=manager)
 
-gender_preference = "female"
+gender_preference = "male"
 
 partner_traits_header = header_font.render("Traits", False, (255, 255, 255))
 
@@ -375,13 +380,14 @@ def SetupRun():
     current_strikes = 0
 
     LoadScenario(0)
-    SchedualFunction(1, FadeFromBlack, [2])
+
 
 def CheckFailState():
     if current_strikes >= 2:
         print("The game is lost")
         FadeToBlack(2)
         SchedualFunction(2, SetupRun)
+        SchedualFunction(2, FadeFromBlack, [2])
 
 def AddStrike():
     global current_strikes
@@ -449,6 +455,8 @@ def LoadScenario(index):
 
 SetupRun()
 
+
+
 def OptionA():
     option_a_function(*option_a_func_params)
 
@@ -471,7 +479,7 @@ def ProcessButtonClickFunctions(ui_button):
                         option_b_button: OptionB}
     button_functions[ui_button]()
 
-
+FadeFromBlack(2)
 
 clock = pygame.time.Clock()
 
