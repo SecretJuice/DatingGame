@@ -5,37 +5,72 @@ import random
 WINDOW_SIZE = (480*2, 270*2)
 
 def SomeFunc(*params):
-    print("first funnc")
-    AddStrike()
-    ChangeEmotion(0)
+    print("ima null func")
+
     
 
 def SomeOtherFunc(*params):
     print("yet another func")
     ChangeEmotion(random.randint(1,3))
 
+def TraitsCheck(option):
+
+    """Returns list of how many positive and negative traits match"""
+
+    matches = [[], []]
+
+    positive = current_scenario[option]['positive_traits']
+    negative = current_scenario[option]["negative_traits"]
+
+    for trait in current_traits:
+        if trait in positive:
+            matches[0].append(trait)
+        if trait in negative:
+            matches[1].append(trait)
+    
+    print(matches)
+    return matches
+
+def EvaluateOption(option):
+
+    pos, neg = TraitsCheck(option)
+
+    if len(pos) > len(neg):
+        EditScore(1)
+        ChangeEmotion(2)
+    elif len(pos) < len(neg):
+        EditScore(-1)
+        AddStrike(neg)
+        ChangeEmotion(0)
+    elif len(pos) == len(neg):
+        ChangeEmotion(1)
+
+    LoadScenario(0)
+
+
+
 scenarios = [
             {'scenario': "Basically this thing happened what are you going to do about it you scared i bet your scared you scaredy cat",
             'option_a': {
 
                 "text": "Option text that shows up in box",
-                "positive_traits": ["affectionate", "attentive"],
-                "negative_traits": ["stubborn"],
+                "positive_traits": ["affectionate", "jealous", "attentive", "possessive", "caring", "moody", "devoted", "stubborn"],
+                "negative_traits": ["insecure", "romantic", "needy", "considerate", "temperamental", "trustworthy", "empathetic"],
                 "display_function": SomeFunc,
-                "activation_function": SomeFunc,
+                "activation_function": EvaluateOption,
                 "display_func_params": [],
-                "activation_func_params": []
+                "activation_func_params": ["option_a"]
 
             },
             'option_b': {
 
                 "text": "Option text that shows up in box",
-                "positive_traits": ["affectionate", "attentive"],
-                "negative_traits": ["stubborn"],
+                "positive_traits": ["judgmental", "communicative", "distrustful", "compassionate", "manipulative", "dedicated"],
+                "negative_traits": ["supportive", "clingy", "understanding", "distant", "adventurous", "impulsive", "open-minded", "critical", "spontaneous"],
                 "display_function": SomeFunc,
-                "activation_function": SomeOtherFunc,
+                "activation_function": EvaluateOption,
                 "display_func_params": [],
-                "activation_func_params": []
+                "activation_func_params": ['option_b']
             }}
             ]
 
@@ -353,7 +388,7 @@ option_b_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 2
                                             text='Option B Text',
                                             manager=manager)
 
-gender_preference = "male"
+gender_preference = "female"
 
 partner_traits_header = header_font.render("Traits", False, (255, 255, 255))
 
@@ -369,30 +404,66 @@ current_strikes = 0
 
 current_traits = ["Quiet", "Smart", "Clean-freak", "Observant", "Scary", "Smooth"]
 
+learned_traits = []
+
 traits_texts = []
 
 current_scenario = None
+
+current_score = 0
 
 def SetupRun():
     CreateSO(gender_preference)
 
     global current_strikes
+    global current_score
     current_strikes = 0
+    current_score = 0
 
+    print(learned_traits)
     LoadScenario(0)
 
+def RestartGame():
+    FadeToBlack(2)
+    SchedualFunction(2, SetupRun)
+    SchedualFunction(2, FadeFromBlack, [2])
 
-def CheckFailState():
+def CheckFailState(traits):
+
+    global learned_traits
+
     if current_strikes >= 2:
         print("The game is lost")
-        FadeToBlack(2)
-        SchedualFunction(2, SetupRun)
-        SchedualFunction(2, FadeFromBlack, [2])
 
-def AddStrike():
+        LearnTrait(traits)
+
+        RestartGame()
+
+def LearnTrait(traits):
+    for trait in traits:
+        if not trait in learned_traits:
+            learned_traits.append(trait)
+            break
+
+
+def CheckWinState():
+    if current_score >= 5:
+        print("The Game is won!")
+        RestartGame()
+
+def EditScore(increment):
+    global current_score
+    current_score += increment
+
+    if current_score <= 0: current_score = 0 
+
+    print(f"Current Score {current_score}")
+    CheckWinState()
+
+def AddStrike(traits):
     global current_strikes
     current_strikes += 1
-    CheckFailState()
+    CheckFailState(traits)
 
 
 
@@ -419,7 +490,10 @@ def CreateSO(gender):
     traits_texts = []
 
     for trait in current_traits:
-        traits_texts.append(body_font.render(trait.capitalize(), False, (255, 255, 255)))
+        if trait in learned_traits:
+            traits_texts.append(body_font.render(trait.capitalize(), False, (255, 255, 255)))
+        else:
+            traits_texts.append(body_font.render("-----", False, (255, 255, 255)))
 
     current_date_portrait = BuildDatePortrait(gender)
         
@@ -428,6 +502,7 @@ option_a_function = SomeFunc
 option_a_func_params = []
 option_b_function = SomeOtherFunc
 option_b_func_params = []
+
 
 
 def LoadScenario(index):
