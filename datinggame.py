@@ -45,7 +45,7 @@ def EvaluateOption(option):
     elif len(pos) == len(neg):
         ChangeEmotion(1)
 
-    LoadScenario(0)
+    SelectScenario()
 
 def CheckScenarioValidity():
     
@@ -64,6 +64,14 @@ def CheckScenarioValidity():
         return False
     
     return True
+
+def SelectScenario():
+
+    valid = False
+
+    while not valid:
+        LoadScenario(random.randint(0, len(scenarios) - 1))
+        valid = CheckScenarioValidity()
 
 current_scenario = None
 
@@ -89,6 +97,136 @@ scenarios = [
                 "activation_function": EvaluateOption,
                 "display_func_params": [],
                 "activation_func_params": ['option_b']
+            }},
+            {
+            'scenario': "Your partner wants to spend the day with you, but you had already made plans with your friends. What do you do?",
+            'option_a': {
+                "text": "Cancel plans with your friends and spend the day with your partner",
+                "positive_traits": ["affectionate", "attentive", "caring"],
+                "negative_traits": ["independent", "spontaneous", "open-minded"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "Explain the situation to your partner and stick with your original plans",
+                "positive_traits": ["independent", "spontaneous", "open-minded"],
+                "negative_traits": ["affectionate", "attentive", "caring"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+
+            {
+            'scenario': "You and your partner are planning a trip, but they want to go somewhere you have already been. What do you do?",
+            'option_a': {
+                "text": "Agree to go to the place your partner wants to go to",
+                "positive_traits": ["flexible", "adventurous", "considerate"],
+                "negative_traits": ["stubborn", "judgmental", "demanding"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "Suggest an alternative destination that you both have not been to before",
+                "positive_traits": ["considerate", "adventurous", "flexible"],
+                "negative_traits": ["stubborn", "judgmental", "demanding"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+
+            {
+            'scenario': "Your partner has been having a difficult time at work and comes home stressed every day. How do you help them relax?",
+            'option_a': {
+                "text": "Cook them a nice meal and give them a massage",
+                "positive_traits": ["compassionate", "understanding", "affectionate"],
+                "negative_traits": ["manipulative", "clingy", "needy"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "Give them some space to unwind and offer to listen if they want to talk",
+                "positive_traits": ["independent", "understanding", "supportive"],
+                "negative_traits": ["needy", "clingy", "manipulative"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+            {'scenario': "Your significant other is feeling overwhelmed at work and needs to cancel your date night. What do you do?",
+            'option_a': {
+
+            "text": "Get angry and take it personally",
+            "positive_traits": ["possessive", "demanding"],
+            "negative_traits": ["empathetic", "supportive"],
+            "display_function": SomeFunc,
+            "activation_function": EvaluateOption,
+            "display_func_params": [],
+            "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+
+            "text": "Show empathy and offer to help them in any way you can",
+            "positive_traits": ["empathetic", "supportive", "understanding"],
+            "negative_traits": ["judgmental", "distrustful"],
+            "display_function": SomeFunc,
+            "activation_function": EvaluateOption,
+            "display_func_params": [],
+            "activation_func_params": ['option_b']
+            }},
+
+            {'scenario': "Your significant other surprises you with a gift that you don't like. What do you do?",
+            'option_a': {
+
+            "text": "Pretend to like it and keep it anyway",
+            "positive_traits": ["considerate", "affectionate"],
+            "negative_traits": ["honest", "critical"],
+            "display_function": SomeFunc,
+            "activation_function": EvaluateOption,
+            "display_func_params": [],
+            "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+
+            "text": "Express your appreciation but kindly ask if it's possible to exchange it for something else",
+            "positive_traits": ["honest", "considerate", "communicative"],
+            "negative_traits": ["demanding", "manipulative"],
+            "display_function": SomeFunc,
+            "activation_function": EvaluateOption,
+            "display_func_params": [],
+            "activation_func_params": ['option_b']
+            }},
+
+            {'scenario': "Your significant other has been hanging out with a friend you don't particularly like. What do you do?",
+            'option_a': {
+
+            "text": "Demand that they stop spending time with that friend",
+            "positive_traits": ["jealous", "possessive"],
+            "negative_traits": ["open-minded", "compassionate"],
+            "display_function": SomeFunc,
+            "activation_function": EvaluateOption,
+            "display_func_params": [],
+            "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+
+            "text": "Express your concerns about the friend but trust your significant other's judgment",
+            "positive_traits": ["communicative", "trustworthy"],
+            "negative_traits": ["distrustful", "judgmental"],
+            "display_function": SomeFunc,
+            "activation_function": EvaluateOption,
+            "display_func_params": [],
+            "activation_func_params": ['option_b']
             }}
             ]
 
