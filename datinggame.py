@@ -6,12 +6,13 @@ WINDOW_SIZE = (480*2, 270*2)
 
 def SomeFunc(*params):
     print("first funnc")
-    CreateSO("female")
+    AddStrike()
+    ChangeEmotion(0)
     
 
 def SomeOtherFunc(*params):
     print("yet another func")
-    ChangeEmotion(random.randint(0,3))
+    ChangeEmotion(random.randint(1,3))
 
 scenarios = [
             {'scenario': "Basically this thing happened what are you going to do about it you scared i bet your scared you scaredy cat",
@@ -193,6 +194,9 @@ empathy_icon = LoadImage("icons/empathy.png")
 quickthinking_icon = LoadImage("icons/quickthinking.png")
 suave_icon = LoadImage("icons/suave.png")
 
+heart_whole_icon = LoadImage('icons/heart_whole.png')
+heart_broken_icon = LoadImage('icons/heart_broken.png')
+
 emotion_icons = [LoadImage(f"icons/emoji_{i+1}.png") for i in range(4)]
 
 show_emotion = True
@@ -200,12 +204,54 @@ current_emotion = emotion_icons[0]
 
 clock_subs = {
 
-    "emotion_icon": 0
+    "emotion_icon": 0,
+    "black_fade": 2
 
 }
 
+function_schedule = {}
+
+def SchedualFunction(secs, func, params=[]):
+
+    global clock_subs
+    global function_schedule
+
+    if func in function_schedule:
+        return
+
+    function_schedule[func] = params
+    clock_subs[func] = secs
+
+def CheckFuncSchedual():
+
+    global clock_subs
+    global function_schedule
+
+    execute_funcs = []
+
+    for func in function_schedule:
+
+        if GetClockValue(func) <= 0:
+
+            execute_funcs.append(func)
+
+    for func in execute_funcs:
+        ExecuteSchedualedFunc(func, function_schedule[func])
+
+        function_schedule.pop(func)
+        clock_subs.pop(func)
+
+
+def ExecuteSchedualedFunc(func, params):
+    print(f"Executing {func} with {params}")
+    func(*params)
+
 def GetClockValue(clock):
     return clock_subs[clock]
+
+def SetClockValue(clock, value):
+    global clock_subs
+    clock_subs[clock] = value
 
 def ChangeEmotion(emote_level):
 
@@ -220,15 +266,74 @@ def ShowEmotion():
     if GetClockValue("emotion_icon") > 0:
         RenderElement(current_emotion, (310, 50))
 
+
+
+
+def ShowStrikes(strikes):
+
+    pos = (80, 40)
+
+    image = heart_broken_icon
+
+    for i in range(2):
+        if strikes <= 0:
+            image = heart_whole_icon
+        
+        RenderElement(image, (pos[0] + (55 * i), pos[1]))
+        strikes -= 1
+
+
 def UpdateClockSubscribers(delta):
     
     for clock in clock_subs:
+
 
         clock_subs[clock] -= delta
 
         if clock_subs[clock] <= 0:
             clock_subs[clock] = 0
+        
+        # print(clock, clock_subs[clock])
 
+
+
+
+fade_to_black = False
+fade_rate = 2
+
+def FadeToFromBlack():
+
+    multiplier = 0
+
+    if fade_to_black == False:
+        multiplier = GetClockValue("black_fade") / fade_rate
+    else:
+        multiplier = 1 - (GetClockValue("black_fade") / fade_rate)
+
+    surface = pygame.Surface(WINDOW_SIZE)
+    surface.set_alpha(multiplier * 255)
+    surface.fill((0,0,0))
+    RenderElement(surface, (0,0))
+
+def FadeToBlack(rate):
+    global fade_to_black
+    global fade_rate
+
+    fade_rate = rate
+    fade_to_black = True
+    ChangeUIClickable(False)
+    
+
+    SetClockValue("black_fade", rate)
+
+def FadeFromBlack(rate):
+    global fade_to_black
+    global fade_rate
+
+    fade_rate = rate
+    fade_to_black = False
+    SchedualFunction(rate, ChangeUIClickable, [True])
+    SetClockValue("black_fade", rate)
 
 manager = pygame_gui.UIManager(WINDOW_SIZE, "theme.json")
 
@@ -243,6 +348,8 @@ option_b_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 2
                                             text='Option B Text',
                                             manager=manager)
 
+gender_preference = "female"
+
 partner_traits_header = header_font.render("Traits", False, (255, 255, 255))
 
 partner_name_text = "Gertrude's sister"
@@ -253,12 +360,37 @@ option_a_text = "Yep he do be doin the do tho but what if i put a bunch of text 
 option_b_text = "Oh boi there he go again"
 
 current_player_stats = {'suave': 0, 'empathy': 0, 'quick-thinking': 0}
+current_strikes = 0
 
 current_traits = ["Quiet", "Smart", "Clean-freak", "Observant", "Scary", "Smooth"]
 
 traits_texts = []
 
 current_scenario = None
+
+def SetupRun():
+    CreateSO(gender_preference)
+
+    global current_strikes
+    current_strikes = 0
+
+    LoadScenario(0)
+    SchedualFunction(1, FadeFromBlack, [2])
+
+def CheckFailState():
+    if current_strikes >= 2:
+        print("The game is lost")
+        FadeToBlack(2)
+        SchedualFunction(2, SetupRun)
+
+def AddStrike():
+    global current_strikes
+    current_strikes += 1
+    CheckFailState()
+
+
+
+
 
 def CreateSO(gender):
     global partner_name_text
@@ -315,7 +447,7 @@ def LoadScenario(index):
     option_b_function = current_scenario['option_b']['activation_function']
     option_b_func_params = current_scenario['option_b']['activation_func_params']
 
-LoadScenario(0)
+SetupRun()
 
 def OptionA():
     option_a_function(*option_a_func_params)
@@ -324,7 +456,17 @@ def OptionA():
 def OptionB():
     option_b_function(*option_b_func_params)
 
+ui_clickable = False
+
+def ChangeUIClickable(clickable):
+
+    global ui_clickable
+    ui_clickable = clickable
+
 def ProcessButtonClickFunctions(ui_button):
+
+    if ui_clickable == False: return
+
     button_functions = {option_a_button: OptionA,
                         option_b_button: OptionB}
     button_functions[ui_button]()
@@ -364,7 +506,8 @@ while is_running:
     window_surface.blit(empathy_icon, (560, 464))
     window_surface.blit(quickthinking_icon, (730, 464))
     ShowEmotion()
-    UpdateClockSubscribers(time_delta)
+    ShowStrikes(current_strikes)
+  
 
     for index in range(len(traits_texts)):
         if index < 3:
@@ -373,5 +516,9 @@ while is_running:
             window_surface.blit(traits_texts[index], (240, 456 + ((index - 3) * 22)))
 
     manager.draw_ui(window_surface)
+
+    FadeToFromBlack()
+    UpdateClockSubscribers(time_delta)
+    CheckFuncSchedual()
 
     pygame.display.update()
