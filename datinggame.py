@@ -62,6 +62,7 @@ def StatCheck(option, stat):
         print("Failed stat roll")
     
     SelectScenario()
+    #Feedback, tell player result and why
 
 def CheckScenarioValidity():
     
@@ -271,11 +272,6 @@ def PlaceCentered(element, pos, surface=window_surface):
 
 def WriteOutText(text, font, color, timestep=0):
     '''This is meant to write out text sequentially, for now just make the text'''
-    # write_out_string = ""
-    # for char in text:
-    #     write_out_string += char
-    #     text_object = font.render(write_out_string, False, color)
-    #     pygame.time.delay(timestep * 1000)
 
     return font.render(text, False, color)
 
@@ -310,17 +306,8 @@ def tint(surf, tint_color):
     """ adds tint_color onto surf.
     """
     surf = surf.copy()
-    # surf.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
     surf.fill(tint_color, None, pygame.BLEND_RGBA_MULT)
     return surf
-
-    # while len(word_list) > 0:
-    #     test_line = ""
-    #     for word in word_list:
-    #         test_line += word + " "
-    #     text_render = font.render(test_line, False, color)
-    #     if text.get_width() <= max_width:
-    #         lines.append(text_render)
 
 date_names = {
 
