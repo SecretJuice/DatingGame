@@ -46,6 +46,23 @@ def EvaluateOption(option):
 
     SelectScenario()
 
+def StatCheck(option, stat):
+
+    stat_value = current_player_stats[stat]
+    pos, neg = TraitsCheck(option)
+
+    if random.randint(1, 4) <= stat_value:
+        EditScore(2)
+        ChangeEmotion(3)
+        print("Passed the stat roll")
+    else:
+        EditScore(-2)
+        AddStrike(neg)
+        ChangeEmotion(0)
+        print("Failed stat roll")
+    
+    SelectScenario()
+
 def CheckScenarioValidity():
     
     """Returns True or False depending on whether this particular scenario should be shown to the player in this run"""
@@ -89,13 +106,13 @@ scenarios = [
             },
             'option_b': {
 
-                "text": "Option text that shows up in box",
+                "text": "This is a stat check",
                 "positive_traits": ["judgmental", "communicative", "distrustful", "compassionate", "manipulative", "dedicated"],
                 "negative_traits": ["supportive", "clingy", "understanding", "distant", "adventurous", "impulsive", "open-minded", "critical", "spontaneous"],
                 "display_function": SomeFunc,
-                "activation_function": EvaluateOption,
+                "activation_function": StatCheck,
                 "display_func_params": [],
-                "activation_func_params": ['option_b']
+                "activation_func_params": ['option_b', "suave"]
             }},
             {
             'scenario': "Your partner wants to spend the day with you, but you had already made plans with your friends. What do you do?",
@@ -576,7 +593,7 @@ scenario_text = "Hey this thing happened"
 option_a_text = "Yep he do be doin the do tho but what if i put a bunch of text here would it be too much to handle???"
 option_b_text = "Oh boi there he go again"
 
-current_player_stats = {'suave': 0, 'empathy': 0, 'quick-thinking': 0}
+current_player_stats = {'suave': 1, 'empathy': 1, 'quick-thinking': 1}
 current_strikes = 0
 
 current_traits = ["Quiet", "Smart", "Clean-freak", "Observant", "Scary", "Smooth"]
