@@ -446,7 +446,6 @@ def CheckFuncSchedual():
         clock_subs.pop(func)
         ExecuteSchedualedFunc(func, function_schedule.pop(func))
 
-
 def ExecuteSchedualedFunc(func, params):
     print(f"Executing {func} with {params}")
     func(*params)
@@ -465,14 +464,10 @@ def ChangeEmotion(emote_level):
 
     clock_subs['emotion_icon'] = 1
 
-
 def ShowEmotion():
 
     if GetClockValue("emotion_icon") > 0:
         RenderElement(current_emotion, (310, 50))
-
-
-
 
 def ShowStrikes(strikes):
 
@@ -487,7 +482,6 @@ def ShowStrikes(strikes):
         RenderElement(image, (pos[0] + (55 * i), pos[1]))
         strikes -= 1
 
-
 def UpdateClockSubscribers(delta):
     
     for clock in clock_subs:
@@ -499,9 +493,6 @@ def UpdateClockSubscribers(delta):
             clock_subs[clock] = 0
         
         # print(clock, clock_subs[clock])
-
-
-
 
 fade_to_black = False
 fade_rate = 2
@@ -612,7 +603,6 @@ def SetupRun():
 
 def RestartGame(learned_trait):
     FadeToBlack(1)
-    SchedualFunction(1, FadeFromBlack, [1])
     SchedualFunction(1, ChangeScene, [DisplayTextCard, [f"Your SO died. It's your fault. Feel bad.\nbtw your learned the '{learned_trait.capitalize()}' trait"], OnLoadTextCard])
 
 
@@ -633,11 +623,14 @@ def LearnTrait(traits):
             learned_traits.append(trait)
             return trait
 
+def WinGame(name):
+    FadeToBlack(1)
+    SchedualFunction(1, ChangeScene, [DisplayTextCard, [f"you might not know everything about partner, but that okay! You will dicover more and you love eac other. If you love eac other enough, you get through everythig!"], OnLoadWinTextCard])
 
 def CheckWinState():
     if current_score >= 5:
         print("The Game is won!")
-        RestartGame()
+        WinGame(partner_name_text)
 
 def EditScore(increment):
     global current_score
@@ -829,8 +822,12 @@ def DisplayTextCard(text):
 def OnLoadTextCard():
     
     SchedualFunction(5, FadeToBlack, [1])
-    print("Schedualiung the fade from")
     SchedualFunction(6, ChangeScene, [DisplayMainGame, [], SetupRun])
+
+def OnLoadWinTextCard():
+    
+    SchedualFunction(5, FadeToBlack, [1])
+    SchedualFunction(6, ChangeScene, [DisplayTitleScreen, [], SomeFunc])
 
 def DisplayScene(scene_func, args=[]):
     scene_func(*args)
