@@ -535,10 +535,10 @@ def FadeFromBlack(rate):
     SchedualFunction(rate, ChangeUIClickable, [True])
     SetClockValue("black_fade", rate)
 
-manager = pygame_gui.UIManager(WINDOW_SIZE, "theme.json")
+manager = pygame_gui.UIManager(WINDOW_SIZE, "resources/theme.json")
 
-body_font = pygame.font.Font("Greenscr.ttf", 12)
-header_font = pygame.font.Font("Greenscr.ttf", 20)
+body_font = pygame.font.Font("resources/Greenscr.ttf", 12)
+header_font = pygame.font.Font("resources/Greenscr.ttf", 20)
 
 def LoadUI(elements):
 
