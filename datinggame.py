@@ -7,7 +7,6 @@ WINDOW_SIZE = (480*2, 270*2)
 def SomeFunc(*params):
     print("ima null func")
 
-    
 
 def SomeOtherFunc(*params):
     print("yet another func")
