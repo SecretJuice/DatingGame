@@ -385,7 +385,11 @@ def DisplayDatePortrait(portrait):
 
 current_date_portrait = BuildDatePortrait("female")
 
-background = LoadImage("background.png")
+background = LoadImage("gui/background.png")
+title_screen = LoadImage("gui/title_screen.png")
+text_card = LoadImage("gui/text_card.png")
+selection_screen = LoadImage("gui/selection_screen.png")
+
 empathy_icon = LoadImage("icons/empathy.png")
 quickthinking_icon = LoadImage("icons/quickthinking.png")
 suave_icon = LoadImage("icons/suave.png")
@@ -536,13 +540,35 @@ manager = pygame_gui.UIManager(WINDOW_SIZE, "theme.json")
 body_font = pygame.font.Font("Greenscr.ttf", 12)
 header_font = pygame.font.Font("Greenscr.ttf", 20)
 
+def LoadUI(elements):
+
+    for element in ui_elements:
+        if element in elements:
+            element.show()
+        else:
+            element.hide()
+
 option_a_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((387, 215), (242, 245)),
-                                            text='Option A Text',
+                                            text="",
                                             manager=manager)
 
 option_b_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((640, 215), (242, 245)),
-                                            text='Option B Text',
+                                            text="",
                                             manager=manager)
+
+play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((535, 369), (172, 64)),
+                                           text="",
+                                           manager=manager )
+
+male_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((228, 307), (172, 64)),
+                                           text="",
+                                           manager=manager )
+
+female_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((560, 307), (172, 64)),
+                                           text="",
+                                           manager=manager )
+
+ui_elements =[option_a_button, option_b_button, play_button, male_button, female_button]
 
 gender_preference = "female"
 
@@ -684,7 +710,6 @@ def LoadScenario(index):
     option_b_function = current_scenario['option_b']['activation_function']
     option_b_func_params = current_scenario['option_b']['activation_func_params']
 
-    print(CheckScenarioValidity())
 
 SetupRun()
 
@@ -696,6 +721,25 @@ def OptionA():
 
 def OptionB():
     option_b_function(*option_b_func_params)
+
+def PlayButton():
+    FadeToBlack(1)
+    SchedualFunction(1, FadeFromBlack, [1])
+    SchedualFunction(1, ChangeScene, [DisplayGenderSelect, [], SomeFunc])
+
+def MaleButton():
+    global gender_preference
+    gender_preference = "male"
+    FadeToBlack(1)
+    SchedualFunction(1, FadeFromBlack, [1])
+    SchedualFunction(1, ChangeScene, [DisplayMainGame, [], SetupRun])
+
+def FemaleButton():
+    global gender_preference
+    gender_preference = "female"
+    FadeToBlack(1)
+    SchedualFunction(1, FadeFromBlack, [1])
+    SchedualFunction(1, ChangeScene, [DisplayMainGame, [], SetupRun])
 
 ui_clickable = False
 
@@ -709,16 +753,83 @@ def ProcessButtonClickFunctions(ui_button):
     if ui_clickable == False: return
 
     button_functions = {option_a_button: OptionA,
-                        option_b_button: OptionB}
+                        option_b_button: OptionB,
+                        play_button: PlayButton,
+                        male_button: MaleButton,
+                        female_button: FemaleButton}
     button_functions[ui_button]()
 
-FadeFromBlack(2)
+FadeFromBlack(1)
 
 clock = pygame.time.Clock()
 
 # def AnimationController():
 
 is_running = True
+
+
+
+def DisplayMainGame():
+
+    LoadUI([option_a_button, option_b_button])
+    RenderElement(background, (0, 0))
+    
+    DisplayDatePortrait(current_date_portrait)
+
+    PlaceCentered(WriteOutText(partner_name_text, header_font, (255, 255, 200)), (230, 391))
+    RenderElement(partner_traits_header, (188, 420))
+    PlaceMultiline(scenario_text, header_font, (20, 20, 20), (410, 50), 400)
+    PlaceMultiline(option_a_text, header_font, (20, 20, 20), (512, 236), 200, True)
+    PlaceMultiline(option_b_text, header_font, (20, 20, 20), (762, 236), 200, True)
+    RenderElement(suave_icon, (390, 464))
+    RenderElement(empathy_icon, (560, 464))
+    RenderElement(quickthinking_icon, (730, 464))
+    ShowEmotion()
+    ShowStrikes(current_strikes)
+  
+
+    for index in range(len(traits_texts)):
+        if index < 3:
+            RenderElement(traits_texts[index], (110, 456 + (index * 22)))
+        else:
+            RenderElement(traits_texts[index], (240, 456 + ((index - 3) * 22)))
+
+    if ui_clickable: manager.draw_ui(window_surface)
+
+def DisplayTitleScreen():
+
+    LoadUI([play_button])
+
+    RenderElement(title_screen, (0, 0))
+    RenderElement(header_font.render("Play", False, (255, 255, 255)), (596, 390))
+
+    if ui_clickable: manager.draw_ui(window_surface)
+
+def DisplayGenderSelect():
+
+    LoadUI([male_button, female_button])
+
+    RenderElement(selection_screen, (0,0))
+    PlaceCentered(header_font.render("Who wood you like to date?", False, (255, 255, 255)), (480, 260))
+    RenderElement(header_font.render("Female", False, (255, 255, 255)), (608, 330))
+    RenderElement(header_font.render("Male", False, (255, 255, 255)), (290, 330))
+
+    if ui_clickable: manager.draw_ui(window_surface)
+
+def DisplayScene(scene_func, args=[]):
+    scene_func(*args)
+
+active_scene = DisplayTitleScreen
+active_scene_args = []
+
+def ChangeScene(scene_func, args, load_func):
+    global active_scene
+    global active_scene_args
+
+    active_scene = scene_func
+    active_scene_args = args
+
+    load_func()
 
 while is_running:
 
@@ -734,29 +845,7 @@ while is_running:
     
     manager.update(time_delta)
 
-    window_surface.blit(background, (0, 0))
-    
-    DisplayDatePortrait(current_date_portrait)
-
-    PlaceCentered(WriteOutText(partner_name_text, header_font, (255, 255, 200)), (230, 391))
-    window_surface.blit(partner_traits_header, (188, 420))
-    PlaceMultiline(scenario_text, header_font, (20, 20, 20), (410, 50), 400)
-    PlaceMultiline(option_a_text, header_font, (20, 20, 20), (512, 236), 200, True)
-    PlaceMultiline(option_b_text, header_font, (20, 20, 20), (762, 236), 200, True)
-    window_surface.blit(suave_icon, (390, 464))
-    window_surface.blit(empathy_icon, (560, 464))
-    window_surface.blit(quickthinking_icon, (730, 464))
-    ShowEmotion()
-    ShowStrikes(current_strikes)
-  
-
-    for index in range(len(traits_texts)):
-        if index < 3:
-            window_surface.blit(traits_texts[index], (110, 456 + (index * 22)))
-        else:
-            window_surface.blit(traits_texts[index], (240, 456 + ((index - 3) * 22)))
-
-    manager.draw_ui(window_surface)
+    DisplayScene(active_scene)
 
     FadeToFromBlack()
     UpdateClockSubscribers(time_delta)
