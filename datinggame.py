@@ -234,12 +234,17 @@ scenarios = [
 
 pygame.init()
 
+pygame.mixer.init()
+
 def LoadImage(image_name, scale=2):
     image = pygame.image.load(f"resources/images/{image_name}")
     print(f"Loaded {image_name}")
     return pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
 
+def LoadMusic(file_name):
 
+    pygame.mixer.music.load(f"resources/sounds/music/{file_name}")
+    pygame.mixer.music.play(-1)
 
 
 pygame.display.set_caption('Dating Game')
@@ -417,6 +422,7 @@ def SchedualFunction(secs, func, params=[]):
     global function_schedule
 
     if func in function_schedule:
+        print(func)
         return
 
     function_schedule[func] = params
@@ -436,10 +442,9 @@ def CheckFuncSchedual():
             execute_funcs.append(func)
 
     for func in execute_funcs:
-        ExecuteSchedualedFunc(func, function_schedule[func])
 
-        function_schedule.pop(func)
         clock_subs.pop(func)
+        ExecuteSchedualedFunc(func, function_schedule.pop(func))
 
 
 def ExecuteSchedualedFunc(func, params):
@@ -605,10 +610,11 @@ def SetupRun():
     print(learned_traits)
     LoadScenario(0)
 
-def RestartGame():
-    FadeToBlack(2)
-    SchedualFunction(2, SetupRun)
-    SchedualFunction(2, FadeFromBlack, [2])
+def RestartGame(learned_trait):
+    FadeToBlack(1)
+    SchedualFunction(1, FadeFromBlack, [1])
+    SchedualFunction(1, ChangeScene, [DisplayTextCard, [f"Your SO died. It's your fault. Feel bad.\nbtw your learned the '{learned_trait.capitalize()}' trait"], OnLoadTextCard])
+
 
 def CheckFailState(traits):
 
@@ -617,15 +623,15 @@ def CheckFailState(traits):
     if current_strikes >= 2:
         print("The game is lost")
 
-        LearnTrait(traits)
+        learned = LearnTrait(traits)
 
-        RestartGame()
+        RestartGame(learned)
 
 def LearnTrait(traits):
     for trait in traits:
         if not trait in learned_traits:
             learned_traits.append(trait)
-            break
+            return trait
 
 
 def CheckWinState():
@@ -724,22 +730,19 @@ def OptionB():
 
 def PlayButton():
     FadeToBlack(1)
-    SchedualFunction(1, FadeFromBlack, [1])
     SchedualFunction(1, ChangeScene, [DisplayGenderSelect, [], SomeFunc])
 
 def MaleButton():
     global gender_preference
     gender_preference = "male"
     FadeToBlack(1)
-    SchedualFunction(1, FadeFromBlack, [1])
-    SchedualFunction(1, ChangeScene, [DisplayMainGame, [], SetupRun])
+    SchedualFunction(1, ChangeScene, [DisplayTextCard, ["It takes a lot of time to get to know someone, and sometimes you need some practices to be a good partner. Let's play Kiss and Breakup!"], OnLoadTextCard])
 
 def FemaleButton():
     global gender_preference
     gender_preference = "female"
     FadeToBlack(1)
-    SchedualFunction(1, FadeFromBlack, [1])
-    SchedualFunction(1, ChangeScene, [DisplayMainGame, [], SetupRun])
+    SchedualFunction(1, ChangeScene, [DisplayTextCard, ["It takes a lot of time to get to know someone, and sometimes you need some practices to be a good partner. Let's play Kiss and Breakup!"], OnLoadTextCard])
 
 ui_clickable = False
 
@@ -816,6 +819,19 @@ def DisplayGenderSelect():
 
     if ui_clickable: manager.draw_ui(window_surface)
 
+def DisplayTextCard(text):
+
+    LoadUI([])
+
+    RenderElement(text_card, (0,0))
+    PlaceMultiline(text, header_font, (255, 255, 255), (480, 280), 500, True)
+
+def OnLoadTextCard():
+    
+    SchedualFunction(5, FadeToBlack, [1])
+    print("Schedualiung the fade from")
+    SchedualFunction(6, ChangeScene, [DisplayMainGame, [], SetupRun])
+
 def DisplayScene(scene_func, args=[]):
     scene_func(*args)
 
@@ -826,10 +842,14 @@ def ChangeScene(scene_func, args, load_func):
     global active_scene
     global active_scene_args
 
+    FadeFromBlack(1)
+
     active_scene = scene_func
     active_scene_args = args
 
     load_func()
+
+LoadMusic("DateOn.mp3")
 
 while is_running:
 
@@ -845,7 +865,7 @@ while is_running:
     
     manager.update(time_delta)
 
-    DisplayScene(active_scene)
+    DisplayScene(active_scene, active_scene_args)
 
     FadeToFromBlack()
     UpdateClockSubscribers(time_delta)
