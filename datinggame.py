@@ -20,7 +20,7 @@ def LoadMusic(file_name):
     pygame.mixer.music.play(-1)
 
 def SomeFunc(*params):
-    print("ima null func")
+    pass
 
 
 def SomeOtherFunc(*params):
@@ -41,8 +41,7 @@ def TraitsCheck(option):
             matches[0].append(trait)
         if trait in negative:
             matches[1].append(trait)
-    
-    print(matches)
+
     return matches
 
 def EvaluateOption(option):
@@ -69,12 +68,10 @@ def StatCheck(option, stat):
     if random.randint(1, 4) <= stat_value:
         EditScore(2)
         ChangeEmotion(3)
-        print("Passed the stat roll")
     else:
         EditScore(-2)
         AddStrike(neg)
         ChangeEmotion(0)
-        print("Failed stat roll")
     
     global stats_to_upgrade
     if not stat in stats_to_upgrade: stats_to_upgrade.append(stat)
@@ -465,7 +462,6 @@ def SchedualFunction(secs, func, params=[]):
     global function_schedule
 
     if func in function_schedule:
-        print(func)
         return
 
     function_schedule[func] = params
@@ -490,7 +486,6 @@ def CheckFuncSchedual():
         ExecuteSchedualedFunc(func, function_schedule.pop(func))
 
 def ExecuteSchedualedFunc(func, params):
-    print(f"Executing {func} with {params}")
     func(*params)
 
 def GetClockValue(clock):
@@ -699,6 +694,8 @@ def LearnTrait(traits):
 
 def WinGame(name):
     FadeToBlack(1)
+    global stats_to_upgrade
+    stats_to_upgrade = []
     SchedualFunction(1, ChangeScene, [DisplayTextCard, [f"you might not know everything about partner, but that okay! You will dicover more and you love eac other. If you love eac other enough, you get through everythig!"], OnLoadWinTextCard])
 
 def CheckWinState():
@@ -889,21 +886,17 @@ def DisplayGenderSelect():
 
 def ShowStatUpgrade():
 
-    print("showing stats")
-
     upgrade_number = len(stats_to_upgrade)
 
     pos = (436, 400)
 
     count = 0
     for stat in stats_to_upgrade:
-        print(stat)
 
         if current_player_stats[stat] <= 4:
             if upgrade_number == 1:
                 RenderElement(stat_icons[stat], (pos[0], pos[1]))
                 RenderElement(WriteOutText("+1", header_font, (255,255,255)), (pos[0] + 66, pos[1] + 26))
-                print("showed it")
 
             if upgrade_number == 2:
                 RenderElement(stat_icons[stat], ((pos[0] - 100)+(count * 200), pos[1]))
