@@ -1,6 +1,7 @@
 import pygame
 import pygame_gui
 import random
+import math
 
 WINDOW_SIZE = (480*2, 270*2)
 
@@ -162,8 +163,8 @@ scenarios = [
                 "negative_traits": ["supportive", "clingy", "understanding", "distant", "adventurous", "impulsive", "open-minded", "critical", "spontaneous"],
                 "display_function": ShowStatOption,
                 "activation_function": StatCheck,
-                "display_func_params": ['option_b', "suave"],
-                "activation_func_params": ['option_b', "suave"]
+                "display_func_params": ['option_b', "empathy"],
+                "activation_func_params": ['option_b', "empathy"]
             }
             },
             {
@@ -446,7 +447,8 @@ current_emotion = emotion_icons[0]
 clock_subs = {
 
     "emotion_icon": 0,
-    "black_fade": 0
+    "black_fade": 0,
+    "heartbreak": 0
 
 }
 
@@ -507,16 +509,24 @@ def ShowEmotion():
 
 def ShowStrikes(strikes):
 
-    pos = (80, 40)
-
     image = heart_broken_icon
 
     for i in range(2):
+        pos = [80, 40]
+        if GetClockValue("heartbreak") > 0 and i <= strikes:
+            theta = random.uniform(0, 2 * math.pi)
+            distance = random.uniform(5.0, 7.0)
+
+            pos[0] += distance * math.cos(theta)
+            pos[1] += distance * math.sin(theta)
+
         if strikes <= 0:
             image = heart_whole_icon
-        
+
         RenderElement(image, (pos[0] + (55 * i), pos[1]))
         strikes -= 1
+
+
 
 def ShowStats():
 
@@ -624,7 +634,7 @@ scenario_text = "Hey this thing happened"
 option_a_text = "Yep he do be doin the do tho but what if i put a bunch of text here would it be too much to handle???"
 option_b_text = "Oh boi there he go again"
 
-current_player_stats = {'suave': 1, 'empathy': 1, 'quick-thinking': 1}
+current_player_stats = {'suave': 1, 'empathy': 3, 'quick-thinking': 1}
 current_strikes = 0
 
 current_traits = ["Quiet", "Smart", "Clean-freak", "Observant", "Scary", "Smooth"]
@@ -649,8 +659,8 @@ def SetupRun():
     SelectScenario()
 
 def RestartGame(learned_trait):
-    FadeToBlack(1)
-    SchedualFunction(1, ChangeScene, [DisplayTextCard, [f"Your SO died. It's your fault. Feel bad.\nbtw your learned the '{learned_trait.capitalize()}' trait"], OnLoadTextCard])
+    FadeToBlack(0.5)
+    SchedualFunction(0.5, ChangeScene, [DisplayTextCard, [f"Your SO died. It's your fault. Feel bad.\nbtw your learned the '{learned_trait.capitalize()}' trait"], OnLoadTextCard])
 
 
 def CheckFailState(traits):
@@ -691,6 +701,7 @@ def EditScore(increment):
 def AddStrike(traits):
     global current_strikes
     current_strikes += 1
+    SetClockValue("heartbreak", 0.5)
     CheckFailState(traits)
 
 
@@ -761,11 +772,6 @@ def LoadScenario(index):
 
     current_scenario['option_a']["display_function"](*current_scenario['option_a']['display_func_params'])
     current_scenario['option_b']["display_function"](*current_scenario['option_b']['display_func_params'])
-
-
-SetupRun()
-
-
 
 def OptionA():
     option_a_function(*option_a_func_params)
@@ -891,7 +897,7 @@ def ChangeScene(scene_func, args, load_func):
     global active_scene
     global active_scene_args
 
-    FadeFromBlack(1)
+    FadeFromBlack(0.5)
 
     active_scene = scene_func
     active_scene_args = args
