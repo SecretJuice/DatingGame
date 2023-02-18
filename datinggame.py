@@ -4,6 +4,20 @@ import random
 
 WINDOW_SIZE = (480*2, 270*2)
 
+pygame.init()
+
+pygame.mixer.init()
+
+def LoadImage(image_name, scale=2):
+    image = pygame.image.load(f"resources/images/{image_name}")
+    print(f"Loaded {image_name}")
+    return pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
+
+def LoadMusic(file_name):
+
+    pygame.mixer.music.load(f"resources/sounds/music/{file_name}")
+    pygame.mixer.music.play(-1)
+
 def SomeFunc(*params):
     print("ima null func")
 
@@ -64,6 +78,44 @@ def StatCheck(option, stat):
     SelectScenario()
     #Feedback, tell player result and why
 
+current_stat_option = None
+current_stat_pos = (0, 0)
+
+
+
+empathy_icon = LoadImage("icons/empathy.png")
+quickthinking_icon = LoadImage("icons/quickthinking.png")
+suave_icon = LoadImage("icons/suave.png")
+
+stat_icons = {"suave": suave_icon,
+              "empathy": empathy_icon,
+              "quickthinking": quickthinking_icon}
+
+def ShowStatOption(option, stat):
+    global current_stat_pos
+    global current_stat_option
+
+    current_stat_option = stat
+    
+    if option == "option_a":
+
+        current_stat_pos = (512, 336)
+    
+    elif option == "option_b":
+
+        current_stat_pos = (752, 336)
+
+def DisplayStatOption():
+
+    if current_stat_option == None:
+        return
+    
+    surface = stat_icons[current_stat_option]
+
+    PlaceCentered(surface, current_stat_pos)
+    PlaceCentered(WriteOutText(f"{int((current_player_stats[current_stat_option] / 4)*100)}%", header_font, (0,0,0)), (current_stat_pos[0], current_stat_pos[1] + 36))
+
+
 def CheckScenarioValidity():
     
     """Returns True or False depending on whether this particular scenario should be shown to the player in this run"""
@@ -95,7 +147,6 @@ current_scenario = None
 scenarios = [
             {'scenario': "Basically this thing happened what are you going to do about it you scared i bet your scared you scaredy cat",
             'option_a': {
-
                 "text": "Option text that shows up in box",
                 "positive_traits": ["affectionate", "jealous", "attentive", "possessive", "caring", "moody", "devoted", "stubborn"],
                 "negative_traits": ["insecure", "romantic", "needy", "considerate", "temperamental", "trustworthy", "empathetic"],
@@ -106,15 +157,15 @@ scenarios = [
 
             },
             'option_b': {
-
                 "text": "This is a stat check",
                 "positive_traits": ["judgmental", "communicative", "distrustful", "compassionate", "manipulative", "dedicated"],
                 "negative_traits": ["supportive", "clingy", "understanding", "distant", "adventurous", "impulsive", "open-minded", "critical", "spontaneous"],
-                "display_function": SomeFunc,
+                "display_function": ShowStatOption,
                 "activation_function": StatCheck,
-                "display_func_params": [],
+                "display_func_params": ['option_b', "suave"],
                 "activation_func_params": ['option_b', "suave"]
-            }},
+            }
+            },
             {
             'scenario': "Your partner wants to spend the day with you, but you had already made plans with your friends. What do you do?",
             'option_a': {
@@ -137,8 +188,7 @@ scenarios = [
             }
             },
 
-            {
-            'scenario': "You and your partner are planning a trip, but they want to go somewhere you have already been. What do you do?",
+            {'scenario': "You and your partner are planning a trip, but they want to go somewhere you have already been. What do you do?",
             'option_a': {
                 "text": "Agree to go to the place your partner wants to go to",
                 "positive_traits": ["flexible", "adventurous", "considerate"],
@@ -159,8 +209,7 @@ scenarios = [
             }
             },
 
-            {
-            'scenario': "Your partner has been having a difficult time at work and comes home stressed every day. How do you help them relax?",
+            {'scenario': "Your partner has been having a difficult time at work and comes home stressed every day. How do you help them relax?",
             'option_a': {
                 "text": "Cook them a nice meal and give them a massage",
                 "positive_traits": ["compassionate", "understanding", "affectionate"],
@@ -180,88 +229,74 @@ scenarios = [
                 "activation_func_params": ['option_b']
             }
             },
+
             {'scenario': "Your significant other is feeling overwhelmed at work and needs to cancel your date night. What do you do?",
             'option_a': {
-
-            "text": "Get angry and take it personally",
-            "positive_traits": ["possessive", "demanding"],
-            "negative_traits": ["empathetic", "supportive"],
-            "display_function": SomeFunc,
-            "activation_function": EvaluateOption,
-            "display_func_params": [],
-            "activation_func_params": ["option_a"]
+                "text": "Get angry and take it personally",
+                "positive_traits": ["possessive", "demanding"],
+                "negative_traits": ["empathetic", "supportive"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
             },
             'option_b': {
-
-            "text": "Show empathy and offer to help them in any way you can",
-            "positive_traits": ["empathetic", "supportive", "understanding"],
-            "negative_traits": ["judgmental", "distrustful"],
-            "display_function": SomeFunc,
-            "activation_function": EvaluateOption,
-            "display_func_params": [],
-            "activation_func_params": ['option_b']
-            }},
+                "text": "Show empathy and offer to help them in any way you can",
+                "positive_traits": ["empathetic", "supportive", "understanding"],
+                "negative_traits": ["judgmental", "distrustful"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
 
             {'scenario': "Your significant other surprises you with a gift that you don't like. What do you do?",
             'option_a': {
-
-            "text": "Pretend to like it and keep it anyway",
-            "positive_traits": ["considerate", "affectionate"],
-            "negative_traits": ["honest", "critical"],
-            "display_function": SomeFunc,
-            "activation_function": EvaluateOption,
-            "display_func_params": [],
-            "activation_func_params": ["option_a"]
+                "text": "Pretend to like it and keep it anyway",
+                "positive_traits": ["considerate", "affectionate"],
+                "negative_traits": ["honest", "critical"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
             },
             'option_b': {
-
-            "text": "Express your appreciation but kindly ask if it's possible to exchange it for something else",
-            "positive_traits": ["honest", "considerate", "communicative"],
-            "negative_traits": ["demanding", "manipulative"],
-            "display_function": SomeFunc,
-            "activation_function": EvaluateOption,
-            "display_func_params": [],
-            "activation_func_params": ['option_b']
-            }},
-
+                "text": "Express your appreciation but kindly ask if it's possible to exchange it for something else",
+                "positive_traits": ["honest", "considerate", "communicative"],
+                "negative_traits": ["demanding", "manipulative"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+            
             {'scenario': "Your significant other has been hanging out with a friend you don't particularly like. What do you do?",
             'option_a': {
-
-            "text": "Demand that they stop spending time with that friend",
-            "positive_traits": ["jealous", "possessive"],
-            "negative_traits": ["open-minded", "compassionate"],
-            "display_function": SomeFunc,
-            "activation_function": EvaluateOption,
-            "display_func_params": [],
-            "activation_func_params": ["option_a"]
+                "text": "Demand that they stop spending time with that friend",
+                "positive_traits": ["jealous", "possessive"],
+                "negative_traits": ["open-minded", "compassionate"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
             },
             'option_b': {
-
-            "text": "Express your concerns about the friend but trust your significant other's judgment",
-            "positive_traits": ["communicative", "trustworthy"],
-            "negative_traits": ["distrustful", "judgmental"],
-            "display_function": SomeFunc,
-            "activation_function": EvaluateOption,
-            "display_func_params": [],
-            "activation_func_params": ['option_b']
-            }}
+                "text": "Express your concerns about the friend but trust your significant other's judgment",
+                "positive_traits": ["communicative", "trustworthy"],
+                "negative_traits": ["distrustful", "judgmental"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            }
             ]
 
               # Need Scenario text, traits that favor, traits that dont, stat features
 
-pygame.init()
 
-pygame.mixer.init()
-
-def LoadImage(image_name, scale=2):
-    image = pygame.image.load(f"resources/images/{image_name}")
-    print(f"Loaded {image_name}")
-    return pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
-
-def LoadMusic(file_name):
-
-    pygame.mixer.music.load(f"resources/sounds/music/{file_name}")
-    pygame.mixer.music.play(-1)
 
 
 pygame.display.set_caption('Dating Game')
@@ -398,9 +433,7 @@ title_screen = LoadImage("gui/title_screen.png")
 text_card = LoadImage("gui/text_card.png")
 selection_screen = LoadImage("gui/selection_screen.png")
 
-empathy_icon = LoadImage("icons/empathy.png")
-quickthinking_icon = LoadImage("icons/quickthinking.png")
-suave_icon = LoadImage("icons/suave.png")
+
 
 heart_whole_icon = LoadImage('icons/heart_whole.png')
 heart_broken_icon = LoadImage('icons/heart_broken.png')
@@ -484,6 +517,17 @@ def ShowStrikes(strikes):
         
         RenderElement(image, (pos[0] + (55 * i), pos[1]))
         strikes -= 1
+
+def ShowStats():
+
+    RenderElement(suave_icon, (390, 464))
+    RenderElement(empathy_icon, (560, 464))
+    RenderElement(quickthinking_icon, (730, 464))
+
+    count = 0
+    for stat in current_player_stats:
+        RenderElement(WriteOutText(f"{current_player_stats[stat]}", header_font, (255,255,255)), (456 + (count * 170), 490))
+        count += 1
 
 def UpdateClockSubscribers(delta):
     
@@ -602,7 +646,7 @@ def SetupRun():
     current_score = 0
 
     print(learned_traits)
-    LoadScenario(0)
+    SelectScenario()
 
 def RestartGame(learned_trait):
     FadeToBlack(1)
@@ -700,6 +744,9 @@ def LoadScenario(index):
     global option_b_function
     global option_b_func_params
 
+    global current_stat_option
+    current_stat_option = None
+
     current_scenario = scenarios[index]
 
     scenario_text = current_scenario['scenario']
@@ -711,6 +758,9 @@ def LoadScenario(index):
 
     option_b_function = current_scenario['option_b']['activation_function']
     option_b_func_params = current_scenario['option_b']['activation_func_params']
+
+    current_scenario['option_a']["display_function"](*current_scenario['option_a']['display_func_params'])
+    current_scenario['option_b']["display_function"](*current_scenario['option_b']['display_func_params'])
 
 
 SetupRun()
@@ -780,10 +830,9 @@ def DisplayMainGame():
     PlaceMultiline(scenario_text, header_font, (20, 20, 20), (410, 50), 400)
     PlaceMultiline(option_a_text, header_font, (20, 20, 20), (512, 236), 200, True)
     PlaceMultiline(option_b_text, header_font, (20, 20, 20), (762, 236), 200, True)
-    RenderElement(suave_icon, (390, 464))
-    RenderElement(empathy_icon, (560, 464))
-    RenderElement(quickthinking_icon, (730, 464))
+    ShowStats()
     ShowEmotion()
+    DisplayStatOption()
     ShowStrikes(current_strikes)
   
 
