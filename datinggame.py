@@ -76,13 +76,16 @@ def StatCheck(option, stat):
         ChangeEmotion(0)
         print("Failed stat roll")
     
+    global stats_to_upgrade
+    if not stat in stats_to_upgrade: stats_to_upgrade.append(stat)
+
     SelectScenario()
     #Feedback, tell player result and why
 
 current_stat_option = None
 current_stat_pos = (0, 0)
 
-
+stats_to_upgrade = []
 
 empathy_icon = LoadImage("icons/empathy.png")
 quickthinking_icon = LoadImage("icons/quickthinking.png")
@@ -183,9 +186,10 @@ scenarios = [
                 "positive_traits": ["independent", "spontaneous", "open-minded"],
                 "negative_traits": ["affectionate", "attentive", "caring"],
                 "display_function": SomeFunc,
-                "activation_function": EvaluateOption,
-                "display_func_params": [],
-                "activation_func_params": ['option_b']
+                "display_function": ShowStatOption,
+                "activation_function": StatCheck,
+                "display_func_params": ['option_b', "empathy"],
+                "activation_func_params": ['option_b', "empathy"]
             }
             },
 
@@ -204,9 +208,10 @@ scenarios = [
                 "positive_traits": ["considerate", "adventurous", "flexible"],
                 "negative_traits": ["stubborn", "judgmental", "demanding"],
                 "display_function": SomeFunc,
-                "activation_function": EvaluateOption,
-                "display_func_params": [],
-                "activation_func_params": ['option_b']
+                "display_function": ShowStatOption,
+                "activation_function": StatCheck,
+                "display_func_params": ['option_b', "empathy"],
+                "activation_func_params": ['option_b', "empathy"]
             }
             },
 
@@ -634,7 +639,7 @@ scenario_text = "Hey this thing happened"
 option_a_text = "Yep he do be doin the do tho but what if i put a bunch of text here would it be too much to handle???"
 option_b_text = "Oh boi there he go again"
 
-current_player_stats = {'suave': 1, 'empathy': 3, 'quick-thinking': 1}
+current_player_stats = {'suave': 1, 'empathy': 1, 'quick-thinking': 1}
 current_strikes = 0
 
 current_traits = ["Quiet", "Smart", "Clean-freak", "Observant", "Scary", "Smooth"]
@@ -652,6 +657,16 @@ def SetupRun():
 
     global current_strikes
     global current_score
+    global stats_to_upgrade
+    global current_player_stats
+
+    for stat in stats_to_upgrade:
+        if current_player_stats[stat] < 4:
+
+            current_player_stats[stat] += 1            
+
+    stats_to_upgrade=[]
+
     current_strikes = 0
     current_score = 0
 
@@ -660,7 +675,8 @@ def SetupRun():
 
 def RestartGame(learned_trait):
     FadeToBlack(0.5)
-    SchedualFunction(0.5, ChangeScene, [DisplayTextCard, [f"Your SO died. It's your fault. Feel bad.\nbtw your learned the '{learned_trait.capitalize()}' trait"], OnLoadTextCard])
+    if learned_trait != None: SchedualFunction(0.5, ChangeScene, [DisplayTextCard, [f"Your SO died. It's your fault. Feel bad.\nbtw your learned the '{learned_trait.capitalize()}' trait"], OnLoadTextCard])
+    else: SchedualFunction(0.5, ChangeScene, [DisplayTextCard, [f"Your SO died. It's your fault. Feel bad."], OnLoadTextCard])
 
 
 def CheckFailState(traits):
@@ -679,6 +695,7 @@ def LearnTrait(traits):
         if not trait in learned_traits:
             learned_traits.append(trait)
             return trait
+
 
 def WinGame(name):
     FadeToBlack(1)
@@ -870,12 +887,46 @@ def DisplayGenderSelect():
 
     if ui_clickable: manager.draw_ui(window_surface)
 
+def ShowStatUpgrade():
+
+    print("showing stats")
+
+    upgrade_number = len(stats_to_upgrade)
+
+    pos = (436, 400)
+
+    count = 0
+    for stat in stats_to_upgrade:
+        print(stat)
+
+        if current_player_stats[stat] <= 4:
+            if upgrade_number == 1:
+                RenderElement(stat_icons[stat], (pos[0], pos[1]))
+                RenderElement(WriteOutText("+1", header_font, (255,255,255)), (pos[0] + 66, pos[1] + 26))
+                print("showed it")
+
+            if upgrade_number == 2:
+                RenderElement(stat_icons[stat], ((pos[0] - 100)+(count * 200), pos[1]))
+                RenderElement(WriteOutText("+1", header_font, (255,255,255)), ((pos[0] - 100)+(count * 200) + 66, pos[1] + 26))
+
+            if upgrade_number == 3:
+                RenderElement(stat_icons[stat], ((pos[0] - 200)+(count * 200), pos[1]))
+                RenderElement(WriteOutText("+1", header_font, (255,255,255)), ((pos[0] - 200)+(count * 200 + 66, pos[1] + 26)))
+
+        count += 1
+
+        
+
 def DisplayTextCard(text):
 
     LoadUI([])
 
     RenderElement(text_card, (0,0))
     PlaceMultiline(text, header_font, (255, 255, 255), (480, 280), 500, True)
+
+    if len(stats_to_upgrade) > 0:
+        ShowStatUpgrade()
+
 
 def OnLoadTextCard():
     
