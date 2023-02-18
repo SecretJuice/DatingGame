@@ -515,7 +515,7 @@ def ShowStrikes(strikes):
         pos = [80, 40]
         if GetClockValue("heartbreak") > 0 and i <= strikes:
             theta = random.uniform(0, 2 * math.pi)
-            distance = random.uniform(5.0, 7.0)
+            distance = random.uniform(3.0, 5.0)
 
             pos[0] += distance * math.cos(theta)
             pos[1] += distance * math.sin(theta)
