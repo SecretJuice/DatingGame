@@ -21,11 +21,11 @@ scenarios = [
             }
             },
             {
-            'scenario': "NOTE: TRAITS NEED WORK {name} wants to spend the day with you, but you had already made plans with your friends. What do you do?",
+            'scenario': "{name} wants to spend the day with you, but you had already made plans with your friends. What do you do?",
             'option_a': {
                 "text": "Cancel plans with your friends and spend the day with {name}.",
-                "positive_traits": ["affectionate", "attentive", "caring"],
-                "negative_traits": ["independent", "spontaneous", "open-minded"],
+                "positive_traits": [“jealous”, "clingy", “devoted”],
+                "negative_traits": [“social”, “independent”, “understanding”],
                 "display_function": SomeFunc,
                 "activation_function": EvaluateOption,
                 "display_func_params": [],
