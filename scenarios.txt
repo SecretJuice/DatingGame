@@ -285,7 +285,7 @@ scenarios = [
             'option_b': {
                 "text": "SUAVE CHECK: Ask {name} to teach you about {activity_ing}! ",
                 "positive_traits": ["trusting", "needy", "prideful", "particular", "adventurous"],
-                "negative_traits": ["homebody", "uncaring", "relaxed", "understanding", "flexible"],
+                "negative_traits": ["homebody", "uncaring"],
                 "display_function": SomeFunc,
                 "activation_function": EvaluateOption,
                 "display_func_params": [],
@@ -314,20 +314,20 @@ scenarios = [
             }
             },
             
-                 {'scenario': "",
+                 {'scenario': ""Let's plan a date night! Which do you think {name} would like better?"",
             'option_a': {
-                "text": "",
-                "positive_traits": [],
-                "negative_traits": [],
+                "text": "{name} won't care what you do. Choose whatever you want!",
+                "positive_traits": ["flexible"],
+                "negative_traits": ["particular"],
                 "display_function": SomeFunc,
                 "activation_function": EvaluateOption,
                 "display_func_params": [],
                 "activation_func_params": ["option_a"]
             },
             'option_b': {
-                "text": "",
-                "positive_traits": [],
-                "negative_traits": [],
+                "text": "You'd better ask {name} before planning anything, because they like doing things a certain way.",
+                "positive_traits": ["particular"],
+                "negative_traits": ["flexible"],
                 "display_function": SomeFunc,
                 "activation_function": EvaluateOption,
                 "display_func_params": [],
@@ -335,7 +335,7 @@ scenarios = [
             }
             },
             
-            {'scenario': "",
+            {'scenario': ""Let's plan a date night! Which do you think {name} would like better?"",
             'option_a': {
                 "text": "",
                 "positive_traits": [],
