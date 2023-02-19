@@ -209,6 +209,132 @@ scenarios = [
             }
             },
             
+            {'scenario': "You and {name} are both in the middle of homework, but you're both getting hungry! Who's going to get lunch?",
+            'option_a': {
+                "text": "Not it! ({name} will go.)",
+                "positive_traits": ["independent", "particular", "adventurous", "devoted", "hard-working"],
+                "negative_traits": ["needy", "trusting", "homebody", "anti-social", "uncaring"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "Pick me! (You will go.)",
+                "positive_traits": ["needy", "trusting", "homebody", "anti-social", "uncaring"],
+                "negative_traits": ["independent", "particular", "adventurous", "devoted", "hard-working"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+            
+            {'scenario': "Let's plan a date night! Which do you think {name} would like better?",
+            'option_a': {
+                "text": "Go out with a group of your mutual friends.",
+                "positive_traits": ["social", "adventurous"],
+                "negative_traits": ["homebody", "anti-social"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "Stay in and play 2-player videogames.",
+                "positive_traits": ["homebody", "anti-social"],
+                "negative_traits": ["social", "adventurous"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+            
+            {'scenario': "You love {activity_ing}, but {name} has never done {activity_ing} before! What do you do?",
+            'option_a': {
+                "text": "Instead of {activity_ing}, choose and activity that you're both comfortable with.",
+                "positive_traits": ["homebody", "uncaring", "relaxed", "particular", "needy"],
+                "negative_traits": ["trusting", "adventurous""flexible", "independent", "devoted"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "SUAVE CHECK: Try teaching {name} about {activity_ing} .",
+                "positive_traits": ["trusting", "adventurous""flexible", "independent", "devoted"],
+                "negative_traits": ["homebody", "uncaring", "relaxed", "particular", "needy"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b', "suave"]
+            }
+            },
+            
+            {'scenario': "{name} wants to take you {activity_ing}. But you've never been {activity_ing} before! What do you do?",
+            'option_a': {
+                "text": "Kindly suggest you do something else together instead.",
+                "positive_traits": ["homebody", "uncaring", "relaxed", "understanding", "flexible"],
+                "negative_traits": ["trusting", "needy", "prideful", "particular", "adventurous"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "SUAVE CHECK: Ask {name} to teach you about {activity_ing}! ",
+                "positive_traits": ["trusting", "needy", "prideful", "particular", "adventurous"],
+                "negative_traits": ["homebody", "uncaring", "relaxed", "understanding", "flexible"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b', "suave"]
+            }
+            },
+            
+            {'scenario': "Let's plan a date night! Which do you think {name} would like better?",
+            'option_a': {
+                "text": "Volunteer together at a food bank.",
+                "positive_traits": ["compassionate", "hard-working"],
+                "negative_traits": ["prideful", "uncaring"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "Go on a shopping spree.",
+                "positive_traits": ["prideful", "uncaring"],
+                "negative_traits": ["compassionate", "hard-working"],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+            
+                 {'scenario': "",
+            'option_a': {
+                "text": "",
+                "positive_traits": [],
+                "negative_traits": [],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ["option_a"]
+            },
+            'option_b': {
+                "text": "",
+                "positive_traits": [],
+                "negative_traits": [],
+                "display_function": SomeFunc,
+                "activation_function": EvaluateOption,
+                "display_func_params": [],
+                "activation_func_params": ['option_b']
+            }
+            },
+            
             {'scenario': "",
             'option_a': {
                 "text": "",
